@@ -36,7 +36,7 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, Long> implements Or
 
     @Transactional
     @Override
-    public Order createOrder(OrderCreateDto dto) {
+    public OrderDTO createOrder(OrderCreateDto dto) {
         Order order = new Order();
         order.setNumber(dto.getNumber());
         order.setStreet(dto.getStreet());
@@ -58,13 +58,13 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, Long> implements Or
         order.setTotalPrice(totalPrice);
         order.getOrderItems().addAll(orderItems);
         order = orderRepository.save(order);
-//        sendOrderPublisher(order, hamburgers);
-        return order;
+        OrderDTO orderDTO = buildOrderDTO(order, hamburgers);
+        sendOrderPublisher(orderDTO);
+        return orderDTO;
     }
 
-    //send message to queue
-    private void sendOrderPublisher(Order order, List<HamburgerDTO> hamburgers) {
-        OrderDTO orderDTO = OrderDTO.builder()
+    private OrderDTO buildOrderDTO(Order order, List<HamburgerDTO> hamburgers) {
+        return OrderDTO.builder()
                 .id(order.getId())
                 .statusDescription(order.getStatusDescription())
                 .cookingType(order.getCookingType())
@@ -74,9 +74,12 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, Long> implements Or
                 .street(order.getStreet())
                 .totalPrice(order.getTotalPrice())
                 .build();
+    }
 
+    //send message to queue
+    private void sendOrderPublisher(OrderDTO orderDTO) {
         orderServicePublisher.sendOrder(orderDTO);
-        log.info("Order with id " + order.getId() + " sent to kitchen service");
+        log.info("Order with id " + orderDTO.getId() + " sent to kitchen service");
     }
 
     @Override

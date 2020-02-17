@@ -6,7 +6,7 @@ import com.syphan.pratice.common.base.BaseService;
 import com.syphan.pratice.common.dto.OrderDTO;
 
 public interface OrderService extends BaseService<Order, Long> {
-    Order createOrder(OrderCreateDto orderDTO);
+    OrderDTO createOrder(OrderCreateDto orderDTO);
 
     void callback(OrderDTO orderDTO);
 }
