@@ -3,7 +3,7 @@ package com.syphan.practice.delivery.consumer;
 
 import com.syphan.practice.delivery.messaging.DeliveryPublisher;
 import com.syphan.practice.delivery.model.Delivery;
-import com.syphan.practice.delivery.processor.OrderProcessor;
+import com.syphan.practice.delivery.processor.DeliveryProcessor;
 import com.syphan.practice.delivery.repository.DeliveryRepository;
 import com.syphan.pratice.common.dto.OrderDTO;
 import com.syphan.pratice.common.dto.type.OrderStatusType;
@@ -14,7 +14,7 @@ import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.stereotype.Component;
 
 @Component
-@EnableBinding({OrderProcessor.class})
+@EnableBinding({DeliveryProcessor.class})
 @Slf4j
 public class DeliveryConsumer {
 
@@ -24,9 +24,10 @@ public class DeliveryConsumer {
     @Autowired
     private DeliveryPublisher deliveryPublisher;
 
-    @StreamListener(target = OrderProcessor.INPUT,
-            condition = "headers['type'] == 'deliveryservice'")
+    @StreamListener(target = DeliveryProcessor.INPUT,
+            condition = "headers['type'] == 'coordinator.kitchen.validated.publisher'")
     public void consumeMessage(OrderDTO orderDTO) {
+        log.info("receive message " + orderDTO.toString());
         Delivery delivery = new Delivery();
         delivery.setNumber(orderDTO.getNumber());
         delivery.setStreet(orderDTO.getStreet());
@@ -36,7 +37,7 @@ public class DeliveryConsumer {
 
         orderDTO.setOrderStatus(OrderStatusType.DELIVERED.getValue());
         orderDTO.setStatusDescription("Delivered");
-        deliveryPublisher.sendToOrderCallback(orderDTO);
+        deliveryPublisher.orderCallbackEventPublisher(orderDTO);
         log.info("Delivered order id " + orderDTO.getId());
     }
 }

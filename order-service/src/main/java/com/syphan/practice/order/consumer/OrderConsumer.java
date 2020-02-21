@@ -1,7 +1,5 @@
 package com.syphan.practice.order.consumer;
 
-import com.syphan.practice.order.processor.DeliveryProcessor;
-import com.syphan.practice.order.processor.KitchenProcessor;
 import com.syphan.practice.order.processor.OrderProcessor;
 import com.syphan.practice.order.service.OrderService;
 import com.syphan.pratice.common.dto.OrderDTO;
@@ -13,18 +11,16 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 @Component
-@EnableBinding({OrderProcessor.class, KitchenProcessor.class, DeliveryProcessor.class})
+@EnableBinding({OrderProcessor.class})
 @Slf4j
 public class OrderConsumer {
-
-    private final static String TOPIC_ORDER_CALLBACK = "orderservicecallback";
 
     @Autowired
     private OrderService orderService;
 
     @StreamListener(target = OrderProcessor.INPUT,
-            condition = "headers['type'] == 'orderservicecallback'")
-    public void callback(@Payload OrderDTO orderDTO) {
-        orderService.callback(orderDTO);
+            condition = "headers['type'] == 'coordinator.order.callback.publisher'")
+    public void orderCallback(@Payload OrderDTO orderDTO) {
+        orderService.orderCallback(orderDTO);
     }
 }

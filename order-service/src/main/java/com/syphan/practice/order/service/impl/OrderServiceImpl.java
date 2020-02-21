@@ -78,12 +78,12 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, Long> implements Or
 
     //send message to queue
     private void sendOrderPublisher(OrderDTO orderDTO) {
-        orderServicePublisher.sendOrder(orderDTO);
+        orderServicePublisher.orderCreateEvent(orderDTO);
         log.info("Order with id " + orderDTO.getId() + " sent to kitchen service");
     }
 
     @Override
-    public void callback(OrderDTO orderDTO) {
+    public void orderCallback(OrderDTO orderDTO) {
         Optional<Order> orderOptional = orderRepository.findById(orderDTO.getId());
         if (orderOptional.isPresent()) {
             Order order = orderOptional.get();

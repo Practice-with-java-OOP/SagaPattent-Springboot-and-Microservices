@@ -1,6 +1,6 @@
 spring:
   application:
-    name: delivery-service
+    name: transaction-coordinator
   cloud:
     stream:
       default-binder: kafka
@@ -16,7 +16,7 @@ spring:
   #datasource
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/delivery_service?autoReconnect=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3306/order_service?autoReconnect=true&useSSL=false&useUnicode=yes&characterEncoding=UTF-8
     username: root
     password: root123456
   #jpa
@@ -49,7 +49,7 @@ spring:
 
 #port
 server:
-  port: 8092
+  port: 8099
 
 ##eureka
 eureka:
@@ -72,30 +72,3 @@ management:
     web:
       exposure:
         include: "*"
-
-
-
-#spring:
-#  application:
-#    name: order-service
-#  data:
-#    mongodb:
-#      host: mongodb-order
-#      database: orderservice
-#  kafka:
-#    consumer:
-#      bootstrap-servers: kafkabroker:9092
-#      group-id: order-service
-#      auto-offset-reset: earliest
-#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#    producer:
-#      bootstrap-servers: kafkabroker:9092
-#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-#      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-#
-#
-#info:
-#  version: @pom.version@
-#  name: @pom.artifactId@
-#  timestamp: @build.time@

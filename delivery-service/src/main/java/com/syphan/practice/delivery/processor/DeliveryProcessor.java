@@ -5,13 +5,13 @@ import org.springframework.cloud.stream.annotation.Output;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.SubscribableChannel;
 
-public interface OrderProcessor {
+public interface DeliveryProcessor {
     String INPUT = "delivery-service";
-    String OUTPUT = "order-service";
+    String OUTPUT = "coordinator-service";
 
-    @Input(OrderProcessor.INPUT)
+    @Input(DeliveryProcessor.INPUT)
     SubscribableChannel input();
 
-    @Output(OrderProcessor.OUTPUT)
+    @Output(DeliveryProcessor.OUTPUT)
     MessageChannel output();
 }

@@ -2,9 +2,7 @@ package com.syphan.practice.kitchen.consumer;
 
 
 import com.syphan.practice.kitchen.messaging.KitchenServicePublisher;
-import com.syphan.practice.kitchen.processor.DeliveryProcessor;
 import com.syphan.practice.kitchen.processor.KitchenProcessor;
-import com.syphan.practice.kitchen.processor.OrderProcessor;
 import com.syphan.practice.kitchen.service.KitchenService;
 import com.syphan.pratice.common.dto.OrderDTO;
 import com.syphan.pratice.common.dto.type.OrderStatusType;
@@ -16,7 +14,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 @Component
-@EnableBinding({KitchenProcessor.class, OrderProcessor.class, DeliveryProcessor.class})
+@EnableBinding({KitchenProcessor.class})
 @Slf4j
 public class KitchenConsumer {
 
@@ -27,10 +25,11 @@ public class KitchenConsumer {
     private KitchenServicePublisher kitchenPublisher;
 
     @StreamListener(target = KitchenProcessor.INPUT,
-            condition = "headers['type'] == 'orderservice'")
+            condition = "headers['type'] == 'coordinator.order.create.publisher'")
     public void consumeMessage(@Payload OrderDTO orderDTO) {
+        log.info("receive message " + orderDTO.toString());
         boolean started = kitchenService.process(orderDTO);
-        kitchenPublisher.sendToOrderCallback(orderDTO);
+        kitchenPublisher.orderCallbackEventPublisher(orderDTO);
 
         if (started) {
             log.info("Start cooking for order id " + orderDTO.getId() + " start");
@@ -38,9 +37,9 @@ public class KitchenConsumer {
             orderDTO.setOrderStatus(OrderStatusType.PACKAGING.getValue());
             orderDTO.setStatusDescription("Order in packaging");
 
-            kitchenPublisher.sendToOrderCallback(orderDTO);
+            kitchenPublisher.orderCallbackEventPublisher(orderDTO);
             log.info("Callback to order service sent");
-            kitchenPublisher.sendToDelivery(orderDTO);
+            kitchenPublisher.sendEventToDelivery(orderDTO);
             log.info("Order id " + orderDTO.getId() + " sent to delivery");
         }
     }

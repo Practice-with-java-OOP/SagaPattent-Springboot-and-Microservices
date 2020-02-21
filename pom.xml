@@ -9,6 +9,7 @@
         <module>order-service</module>
         <module>kitchen-service</module>
         <module>delivery-service</module>
+        <module>transaction-coordinator</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

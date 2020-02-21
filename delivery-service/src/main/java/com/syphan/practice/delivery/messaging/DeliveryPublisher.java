@@ -1,6 +1,6 @@
 package com.syphan.practice.delivery.messaging;
 
-import com.syphan.practice.delivery.processor.OrderProcessor;
+import com.syphan.practice.delivery.processor.DeliveryProcessor;
 import com.syphan.pratice.common.dto.OrderDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.support.MessageBuilder;
@@ -12,14 +12,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class DeliveryPublisher {
 
-    private final static String TOPIC_ORDER_CALLBACK ="orderservicecallback";
+    private final static String COORDINATOR_ORDER_CALLBACK = "orders.callback.publisher";
 
     @Autowired
-    private OrderProcessor orderProcessor;
+    private DeliveryProcessor deliveryProcessor;
 
-    public void sendToOrderCallback(OrderDTO orderDTO) {
-        orderProcessor.output().send(MessageBuilder.withPayload(orderDTO)
-                .setHeader("type", TOPIC_ORDER_CALLBACK)
+    public void orderCallbackEventPublisher(OrderDTO orderDTO) {
+        deliveryProcessor.output().send(MessageBuilder.withPayload(orderDTO)
+                .setHeader("type", COORDINATOR_ORDER_CALLBACK)
                 .build());
     }
 
