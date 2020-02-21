@@ -8,6 +8,11 @@ spring:
         binder:
           brokers:
             - localhost:9092
+          configuration:
+            auto.offset.reset: earliest
+      bindings:
+        coordinator-service:
+          group: coordinator-input
 
   output:
     ansi:

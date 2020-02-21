@@ -8,6 +8,11 @@ spring:
         binder:
           brokers:
             - localhost:9092
+          configuration:
+            auto.offset.reset: earliest
+      bindings:
+        kitchen-service:
+          group: order-input
 
   output:
     ansi:
@@ -72,29 +77,3 @@ management:
     web:
       exposure:
         include: "*"
-
-
-#spring:
-#  application:
-#    name: order-service
-#  data:
-#    mongodb:
-#      host: mongodb-order
-#      database: orderservice
-#  kafka:
-#    consumer:
-#      bootstrap-servers: kafkabroker:9092
-#      group-id: order-service
-#      auto-offset-reset: earliest
-#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#    producer:
-#      bootstrap-servers: kafkabroker:9092
-#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-#      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-#
-#
-#info:
-#  version: @pom.version@
-#  name: @pom.artifactId@
-#  timestamp: @build.time@
