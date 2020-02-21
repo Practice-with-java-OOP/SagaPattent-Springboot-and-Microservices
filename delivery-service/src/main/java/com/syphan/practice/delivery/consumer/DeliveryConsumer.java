@@ -27,6 +27,7 @@ public class DeliveryConsumer {
     @StreamListener(target = OrderProcessor.INPUT,
             condition = "headers['type'] == 'deliveryservice'")
     public void consumeMessage(OrderDTO orderDTO) {
+        log.info("------########## receive message from kitchen service with data " + orderDTO.toString());
         Delivery delivery = new Delivery();
         delivery.setNumber(orderDTO.getNumber());
         delivery.setStreet(orderDTO.getStreet());

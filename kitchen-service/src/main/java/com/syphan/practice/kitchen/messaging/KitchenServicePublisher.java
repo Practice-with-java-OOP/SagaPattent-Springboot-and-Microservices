@@ -3,11 +3,13 @@ package com.syphan.practice.kitchen.messaging;
 import com.syphan.practice.kitchen.processor.DeliveryProcessor;
 import com.syphan.practice.kitchen.processor.OrderProcessor;
 import com.syphan.pratice.common.dto.OrderDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class KitchenServicePublisher {
 
     private final static String TOPIC_ORDER_CALLBACK = "orderservicecallback";
@@ -30,5 +32,6 @@ public class KitchenServicePublisher {
         deliveryProcessor.output().send(MessageBuilder.withPayload(orderDTO)
                 .setHeader("type", TOPIC_DELIVERY)
                 .build());
+        log.info("------##########send message to delivery service with topic " + TOPIC_DELIVERY);
     }
 }
