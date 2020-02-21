@@ -1,26 +1,31 @@
 package com.syphan.practice.delivery.messaging;
 
-import com.syphan.practice.delivery.processor.DeliveryProcessor;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.syphan.pratice.common.dto.OrderDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-/**
- * Created by <a href="mailto:pasquale.paola@gmail.com">Pasquale Paola</a> on 18/09/19.
- */
 @Service
+@Slf4j
 public class DeliveryPublisher {
 
     private final static String COORDINATOR_ORDER_CALLBACK = "orders.callback.publisher";
 
     @Autowired
-    private DeliveryProcessor deliveryProcessor;
+    private KafkaTemplate kafkaTemplate;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     public void orderCallbackEventPublisher(OrderDTO orderDTO) {
-        deliveryProcessor.output().send(MessageBuilder.withPayload(orderDTO)
-                .setHeader("type", COORDINATOR_ORDER_CALLBACK)
-                .build());
+        try {
+            kafkaTemplate.send(COORDINATOR_ORDER_CALLBACK, objectMapper.writeValueAsString(orderDTO));
+        } catch (JsonProcessingException e) {
+            log.error(e.getMessage(), e);
+        }
     }
 
 }

@@ -1,13 +1,24 @@
 spring:
   application:
     name: transaction-coordinator
-  cloud:
-    stream:
-      default-binder: kafka
-      kafka:
-        binder:
-          brokers:
-            - localhost:9092
+#  cloud:
+#    stream:
+#      default-binder: kafka
+#      kafka:
+#        binder:
+#          brokers:
+#            - localhost:9092
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: transaction-coordinator
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
   output:
     ansi:

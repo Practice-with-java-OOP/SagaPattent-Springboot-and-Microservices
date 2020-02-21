@@ -1,12 +1,12 @@
 package com.syphan.practice.transaction.coordinator.messaging;
 
-import com.syphan.practice.transaction.coordinator.processor.CoordinatorProcessor;
-import com.syphan.pratice.common.dto.OrderDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class CoordinatorPublisher {
 
     private final static String COORDINATOR_ORDER_CREATE_TOPIC = "coordinator.order.create.publisher";
@@ -14,23 +14,17 @@ public class CoordinatorPublisher {
     private final static String COORDINATOR_KITCHEN_VALIDATE = "coordinator.kitchen.validated.publisher";
 
     @Autowired
-    private CoordinatorProcessor coordinatorProcessor;
+    private KafkaTemplate kafkaTemplate;
 
-    public void orderCreateEvent(OrderDTO orderDTO) {
-        coordinatorProcessor.kitchenOutput().send(MessageBuilder.withPayload(orderDTO)
-                .setHeader("type", COORDINATOR_ORDER_CREATE_TOPIC)
-                .build());
+    public void orderCreateEvent(String orderDTO) {
+        kafkaTemplate.send(COORDINATOR_ORDER_CREATE_TOPIC, orderDTO);
     }
 
-    public void orderCallbackEvent(OrderDTO orderDTO) {
-        coordinatorProcessor.orderOutput().send(MessageBuilder.withPayload(orderDTO)
-                .setHeader("type", COORDINATOR_ORDER_CALLBACK_TOPIC)
-                .build());
+    public void orderCallbackEvent(String orderDTO) {
+        kafkaTemplate.send(COORDINATOR_ORDER_CALLBACK_TOPIC, orderDTO);
     }
 
-    public void sendEventToDelivery(OrderDTO orderDTO) {
-        coordinatorProcessor.deliveryOutput().send(MessageBuilder.withPayload(orderDTO)
-                .setHeader("type", COORDINATOR_KITCHEN_VALIDATE)
-                .build());
+    public void sendEventToDelivery(String orderDTO) {
+        kafkaTemplate.send(COORDINATOR_KITCHEN_VALIDATE, orderDTO);
     }
 }

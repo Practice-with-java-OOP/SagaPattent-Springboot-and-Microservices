@@ -8,5 +8,5 @@ import com.syphan.pratice.common.dto.OrderDTO;
 public interface OrderService extends BaseService<Order, Long> {
     OrderDTO createOrder(OrderCreateDto orderDTO);
 
-    void orderCallback(OrderDTO orderDTO);
+    void orderCallback(String orderDTO);
 }

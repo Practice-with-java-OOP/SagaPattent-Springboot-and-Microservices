@@ -1,5 +1,6 @@
 package com.syphan.practice.order.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.syphan.practice.order.dto.OrderCreateDto;
 import com.syphan.practice.order.messaging.OrderServicePublisher;
 import com.syphan.practice.order.model.Order;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,9 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, Long> implements Or
         super(orderRepository);
         this.orderRepository = orderRepository;
     }
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private OrderServicePublisher orderServicePublisher;
@@ -83,13 +88,18 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, Long> implements Or
     }
 
     @Override
-    public void orderCallback(OrderDTO orderDTO) {
-        Optional<Order> orderOptional = orderRepository.findById(orderDTO.getId());
-        if (orderOptional.isPresent()) {
-            Order order = orderOptional.get();
-            order.setStatusDescription(orderDTO.getStatusDescription());
-            order.setOrderStatus(orderDTO.getOrderStatus());
-            orderRepository.save(order);
+    public void orderCallback(String record) {
+        try {
+            OrderDTO orderDTO = objectMapper.readValue(record, OrderDTO.class);
+            Optional<Order> orderOptional = orderRepository.findById(orderDTO.getId());
+            if (orderOptional.isPresent()) {
+                Order order = orderOptional.get();
+                order.setStatusDescription(orderDTO.getStatusDescription());
+                order.setOrderStatus(orderDTO.getOrderStatus());
+                orderRepository.save(order);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
